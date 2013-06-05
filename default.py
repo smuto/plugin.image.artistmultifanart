@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 import xbmcaddon
 
-import urllib, simplejson
+import urllib, urllib2, simplejson
 import xbmc, xbmcgui, xbmcplugin
 import time
 
@@ -17,7 +17,8 @@ class multiImagesSession:
         images = result['result']['artists']
         for img in images:
             title = img.get('label','')
-            if not self.addLink(title,img.get('fanart','')): break
+            row = img.get('fanart','')
+            if not self.addLink(title,urllib2.unquote(row[8:-1])): break
         return True
 
     def SEARCH_FANARTS(self,query):
@@ -88,21 +89,27 @@ def get_mbid(artist, song):
         return mbid
 
 def artist_mbid():
-    artist=xbmc.Player().getMusicInfoTag().getArtist()
-    song=xbmc.Player().getMusicInfoTag().getTitle()
-    if len(artist) > 0 and len(song) > 0:
-        multiartist=artist.split(' / ')
-        if (len(multiartist)) >= 2:
-            artist=multiartist[0]
-        return get_mbid(artist, song)
-    if len(artist) == 0 and len(song) > 0:
-        artistsong=song.split(' - ')
-        if (len(artistsong))==2:
-            artist=artistsong[0]
-            song=artistsong[1]
+    json_mbid = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["musicbrainzartistid"], "playerid": 0 }, "id": "AudioGetItem"}')
+    result = simplejson.loads(json_mbid)
+    mbid = result['result']['item']['musicbrainzartistid']
+    if not mbid:
+        artist=xbmc.Player().getMusicInfoTag().getArtist()
+        song=xbmc.Player().getMusicInfoTag().getTitle()
+        if len(artist) > 0 and len(song) > 0:
+            multiartist=artist.split(' / ')
+            if (len(multiartist)) >= 2:
+                artist=multiartist[0]
             return get_mbid(artist, song)
+        if len(artist) == 0 and len(song) > 0:
+            artistsong=song.split(' - ')
+            if (len(artistsong))==2:
+                artist=artistsong[0]
+                song=artistsong[1]
+                return get_mbid(artist, song)
+        else:
+            return None
     else:
-        return None
+        return mbid
 
 def GetStringFromUrl(encurl):
     f = urllib.urlopen( encurl)
