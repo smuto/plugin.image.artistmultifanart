@@ -89,10 +89,13 @@ def get_mbid(artist, song):
         return mbid
 
 def artist_mbid():
-    json_mbid = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["musicbrainzartistid"], "playerid": 0 }, "id": "AudioGetItem"}')
-    result = simplejson.loads(json_mbid)
-    mbid = result['result']['item']['musicbrainzartistid']
-    if not mbid:
+    try:
+        json_mbid = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["musicbrainzartistid"], "playerid": 0 }, "id": "AudioGetItem"}')
+        result = simplejson.loads(json_mbid)
+        mbid = result['result']['item']['musicbrainzartistid']
+        return mbid
+    
+    except:
         artist=xbmc.Player().getMusicInfoTag().getArtist()
         song=xbmc.Player().getMusicInfoTag().getTitle()
         if len(artist) > 0 and len(song) > 0:
@@ -108,8 +111,6 @@ def artist_mbid():
                 return get_mbid(artist, song)
         else:
             return None
-    else:
-        return mbid
 
 def GetStringFromUrl(encurl):
     f = urllib.urlopen( encurl)
