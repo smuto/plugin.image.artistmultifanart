@@ -89,28 +89,35 @@ def get_mbid(artist, song):
         return mbid
 
 def artist_mbid():
-    try:
         json_mbid = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["musicbrainzartistid"], "playerid": 0 }, "id": "AudioGetItem"}')
         result = simplejson.loads(json_mbid)
-        mbid = result['result']['item']['musicbrainzartistid']
-        return mbid
-    
-    except:
-        artist=xbmc.Player().getMusicInfoTag().getArtist()
-        song=xbmc.Player().getMusicInfoTag().getTitle()
-        if len(artist) > 0 and len(song) > 0:
-            multiartist=artist.split(' / ')
-            if (len(multiartist)) >= 2:
-                artist=multiartist[0]
-            return get_mbid(artist, song)
-        if len(artist) == 0 and len(song) > 0:
-            artistsong=song.split(' - ')
-            if (len(artistsong))==2:
-                artist=artistsong[0]
-                song=artistsong[1]
+        try:
+            mbid = result['result']['item']['musicbrainzartistid']
+        except:
+            mbit = '';
+            pass
+        if not mbid:
+            artist=xbmc.Player().getMusicInfoTag().getArtist()
+            song=xbmc.Player().getMusicInfoTag().getTitle()
+            if len(artist) > 0 and len(song) > 0:
+                multiartist=artist.split(' / ')
+                if (len(multiartist)) >= 2:
+                    artist=multiartist[0]
                 return get_mbid(artist, song)
+            if len(artist) == 0 and len(song) > 0:
+                artistsong=song.split(' - ')
+                if (len(artistsong))==2:
+                    artist=artistsong[0]
+                    song=artistsong[1]
+                    return get_mbid(artist, song)
+            else:
+                return None
         else:
-            return None
+            multimbid=mbid.split('/')
+            if (len(multimbid)) >= 2:
+                mbid=multimbid[0]
+            return mbid
+
 
 def GetStringFromUrl(encurl):
     f = urllib.urlopen( encurl)
