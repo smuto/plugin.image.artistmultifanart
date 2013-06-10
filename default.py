@@ -89,12 +89,12 @@ def get_mbid(artist, song):
         return mbid
 
 def artist_mbid():
-        json_mbid = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["musicbrainzartistid"], "playerid": 0 }, "id": "AudioGetItem"}')
-        result = simplejson.loads(json_mbid)
+        mbit = ''
         try:
+            json_mbid = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["musicbrainzartistid"], "playerid": 0 }, "id": "AudioGetItem"}')
+            result = simplejson.loads(json_mbid)
             mbid = result['result']['item']['musicbrainzartistid']
         except:
-            mbit = '';
             pass
         if not mbid:
             artist=xbmc.Player().getMusicInfoTag().getArtist()
@@ -149,9 +149,9 @@ def doPlugin():
     except:
             pass
 
-    print "Mode: "+str(mode)
-    print "URL: "+str(url)
-    print "Name: "+str(name)
+#    print "Mode: "+str(mode)
+#    print "URL: "+str(url)
+#    print "Name: "+str(name)
 
 
     update_dir = True
