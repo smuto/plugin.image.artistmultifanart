@@ -144,6 +144,7 @@ def doPlugin():
             pass
     try:
             name=urllib.unquote_plus(params["name"])
+            xbmcaddon.Addon(id='script.cu.lrclyrics').setSetting(id='song', value='%s' % (str(name)))
     except:
             pass
     try:
