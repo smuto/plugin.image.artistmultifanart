@@ -3,13 +3,15 @@ import xbmcaddon
 
 import urllib, urllib2, simplejson
 import xbmc, xbmcgui, xbmcplugin
-import time
+import time, socket
+
+socket.setdefaulttimeout(10)
 
 class multiImagesSession:
 
     def addLink(self,name,url):
         liz=xbmcgui.ListItem(name, iconImage="DefaultImage.png")
-        return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz,isFolder=False)
+        return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=str(url),listitem=liz,isFolder=False)
 
     def LIBRARY_FANARTS(self):
         retval = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetArtists", "params": {"properties": ["fanart"] }, "id": 1}')
